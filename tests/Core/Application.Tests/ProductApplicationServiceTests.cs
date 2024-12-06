@@ -219,8 +219,11 @@ public class ProductApplicationServiceTests
     public async Task logs_product_creation_with_manual_mock()
     {
         // Arrange
-        var mockRepository = new MockProductRepository();
-        var mockService = new MockProductApplicationService(mockRepository);
+        var dummyRepository = new ProductRepositoryDummy();
+        var mockService = new MockLogger<ProductApplicationService>();
+
+        var productService = new ProductApplicationService(dummyRepository, mockService);
+        
         var request = new CreateProductRequestDto 
         { 
             Name = "Test Product", 
@@ -229,7 +232,7 @@ public class ProductApplicationServiceTests
         };
 
         // Act
-        await mockService.Create(request, CancellationToken.None);
+        await productService.Create(request, CancellationToken.None);
 
         // Assert
         mockService.VerifyLoggedMessage("Creating new product with name: Test Product");
